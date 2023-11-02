@@ -5,6 +5,14 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const bodyParser = require('body-parser');
+const twilio = require('twilio');
+
+
+var client = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
 
 const router = require('./src/router');
 const syncServiceDetails = require('./src/sync_service_details');
@@ -39,6 +47,39 @@ app.use(function(err, req, res, next) {
 
 // Get Sync Service Details for lazy creation of default service if needed
 syncServiceDetails();
+
+app.post('/send-sms', (req, res) => {
+  const smsText = req.body.smsText;
+  if (!smsText) {
+    res.status(400).send({ success: false, error: "SMS text is required" });
+    return;
+  }
+
+  sendsmsmessage(smsText)
+    .then((message) => {
+      res.send({ success: true, message });
+    })
+    .catch((error) => {
+      res.status(500).send({ success: false, error: error.message });
+    });
+});
+
+function sendsmsmessage(smsText) {
+  return client.messages
+    .create({
+      body: smsText,
+      to: '+916284671170',
+      from: '+18778552057',
+    })
+    .then((message) => {
+      console.log(message);
+      return message;
+    });
+}
+
+
+
+
 
 // Create http server and run it
 const server = http.createServer(app);

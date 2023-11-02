@@ -18,28 +18,18 @@ class WelcomeScreen extends React.Component {
       room: "",
     };
 
-    this.state={
-      email:"",
-      room:"",
-    }
-
-
   }
 
 
-  isValidPhoneNumber = (phoneNumber) => {
-    return /^\d+$/.test(phoneNumber);
-  };
 
   login = () => {
     const { email, room } = this.state;
   
     if (this.props.location.pathname === "/sms") {
       if (this.isValidPhoneNumber(email) && room) {
-        this.props.history.push("chat", { room, email });
+        this.props.history.push("sms", { room, email });
       }
     } else {
-      // The existing email validation logic for the "/chat" route
       if (
         email &&
         room &&
